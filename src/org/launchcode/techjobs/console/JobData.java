@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LaunchCode
@@ -75,8 +76,10 @@ public class JobData {
         for (HashMap<String, String> row : allJobs) {
 
             String aValue = row.get(column);
+            String aValueLower = aValue.toLowerCase();
+            String valueLower = value.toLowerCase();
 
-            if (aValue.contains(value)) {
+            if (aValueLower.contains(valueLower)) {
                 jobs.add(row);
             }
         }
@@ -85,13 +88,37 @@ public class JobData {
     }
 
     /**
-     * Read in data from a CSV file and store it in a list
+     * Search that looks for the search term in all columns
      */
-    private static void loadData() {
+    public static ArrayList<HashMap<String, String>> findByValue(String value) {
+        // load data, if not already loaded
+        loadData();
+        String bvalue = value;
+        ArrayList<HashMap<String, String>> jobsByValue = new ArrayList<>();
 
-        // Only load data once
+        //for (Integer m = 0; m < allJobs.size(); m++) {
+        for (HashMap <String, String> jobs: allJobs) {
+            for (String datainjobs : jobs.keySet()){
+                String cValue = jobs.get(datainjobs);
+                String cValueLower = cValue.toLowerCase();
+                String bvalueLower = bvalue.toLowerCase();
+
+                if (cValueLower.contains(bvalueLower)){
+                    jobsByValue.add(jobs);
+                }
+            }
+        }
+        return (jobsByValue);
+    }
+        /**
+         * Read in data from a CSV file and store it in a list
+         */
+
+    private static void loadData(){
+
+            // Only load data once
         if (isDataLoaded) {
-            return;
+                return;
         }
 
         try {
@@ -108,7 +135,6 @@ public class JobData {
             // Put the records into a more friendly format
             for (CSVRecord record : records) {
                 HashMap<String, String> newJob = new HashMap<>();
-
                 for (String headerLabel : headers) {
                     newJob.put(headerLabel, record.get(headerLabel));
                 }
@@ -124,5 +150,4 @@ public class JobData {
             e.printStackTrace();
         }
     }
-
 }
